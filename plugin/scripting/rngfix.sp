@@ -90,7 +90,7 @@ bool g_bIsSurfMap;
 bool g_bLateLoad;
 
 int g_iLaserIndex;
-int g_color1[] = {0, 100, 255, 255}; 
+int g_color1[] = {0, 100, 255, 255};
 int g_color2[] = {0, 255, 0, 255};
 
 void DebugMsg(int client, const char[] fmt, any ...)
@@ -112,8 +112,8 @@ void DebugLaser(int client, const float p1[3], const float p2[3], float life, fl
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-   g_bLateLoad = late;
-   return APLRes_Success;
+	g_bLateLoad = late;
+	return APLRes_Success;
 }
 
 public void OnPluginStart()
@@ -125,21 +125,21 @@ public void OnPluginStart()
 		SetFailState("Game is not supported");
 	}
 	
-	g_vecMins 		  = view_as<float>({-16.0, -16.0, 0.0});
-	g_vecMaxsUnducked = view_as<float>({16.0, 16.0, 0.0});
-	g_vecMaxsDucked   = view_as<float>({16.0, 16.0, 0.0});
+	g_vecMins			= view_as<float>({-16.0, -16.0, 0.0});
+	g_vecMaxsUnducked	= view_as<float>({16.0, 16.0, 0.0});
+	g_vecMaxsDucked		= view_as<float>({16.0, 16.0, 0.0});
 	
 	switch (engine)
 	{
 		case Engine_CSGO:
-		{			
-			g_vecMaxsUnducked[2] = 72.0;
-			g_vecMaxsDucked[2]   = 64.0;
+		{
+			g_vecMaxsUnducked[2]	= 72.0;
+			g_vecMaxsDucked[2]		= 64.0;
 		}
 		case Engine_CSS:
-		{			
-			g_vecMaxsUnducked[2] = 62.0;
-			g_vecMaxsDucked[2]   = 45.0;
+		{
+			g_vecMaxsUnducked[2]	= 62.0;
+			g_vecMaxsDucked[2]		= 45.0;
 		}
 	}
 	
@@ -158,9 +158,9 @@ public void OnPluginStart()
 	
 	AutoExecConfig();
 	
-	g_cvMaxVelocity   = FindConVar("sv_maxvelocity");
-	g_cvGravity 	  = FindConVar("sv_gravity");
-	g_cvAirAccelerate = FindConVar("sv_airaccelerate");
+	g_cvMaxVelocity		= FindConVar("sv_maxvelocity");
+	g_cvGravity			= FindConVar("sv_gravity");
+	g_cvAirAccelerate	= FindConVar("sv_airaccelerate");
 	
 	if (g_cvMaxVelocity == null || g_cvGravity == null || g_cvAirAccelerate == null)
 	{
@@ -169,10 +169,10 @@ public void OnPluginStart()
 	
 	// Not required
 	g_cvTimeBetweenDucks = FindConVar("sv_timebetweenducks");
-	g_cvJumpImpulse		 = FindConVar("sv_jump_impulse");	
+	g_cvJumpImpulse		 = FindConVar("sv_jump_impulse");
 	g_cvAutoBunnyHopping = FindConVar("sv_autobunnyhopping");
 	
-	Handle gamedataConf = LoadGameConfigFile("rngfix.games");	
+	Handle gamedataConf = LoadGameConfigFile("rngfix.games");
 	if (gamedataConf == null) SetFailState("Failed to load rngfix gamedata");
 	
 	// PassesTriggerFilters
@@ -183,7 +183,7 @@ public void OnPluginStart()
 	}
 	PrepSDKCall_SetReturnInfo(SDKType_Bool, SDKPass_Plain);
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
-	g_hPassesTriggerFilters = EndPrepSDKCall();	
+	g_hPassesTriggerFilters = EndPrepSDKCall();
 	
 	if (g_hPassesTriggerFilters == null) SetFailState("Unable to prepare SDKCall for CBaseTrigger::PassesTriggerFilters");
 	
@@ -193,10 +193,10 @@ public void OnPluginStart()
 	if (!PrepSDKCall_SetFromConf(gamedataConf, SDKConf_Signature, "CreateInterface"))
 	{
 		SetFailState("Failed to get CreateInterface");
-	}    
+	}
 	PrepSDKCall_AddParameter(SDKType_String, SDKPass_Pointer);
 	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Pointer, VDECODE_FLAG_ALLOWNULL);
-	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);    
+	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
 	Handle CreateInterface = EndPrepSDKCall();
 	
 	if (CreateInterface == null) SetFailState("Unable to prepare SDKCall for CreateInterface");
@@ -207,8 +207,8 @@ public void OnPluginStart()
 	if (!GameConfGetKeyValue(gamedataConf, "IGameMovement", interfaceName, sizeof(interfaceName)))
 	{
 		SetFailState("Failed to get IGameMovement interface name");
-	}	
-	Address IGameMovement = SDKCall(CreateInterface, interfaceName, 0);     
+	}
+	Address IGameMovement = SDKCall(CreateInterface, interfaceName, 0);
 	if (!IGameMovement)
 	{
 		SetFailState("Failed to get IGameMovement pointer");
@@ -220,14 +220,14 @@ public void OnPluginStart()
 	g_hProcessMovementHookPre = DHookCreate(offset, HookType_Raw, ReturnType_Void, ThisPointer_Ignore, DHook_ProcessMovementPre);
 	DHookAddParam(g_hProcessMovementHookPre, HookParamType_CBaseEntity);
 	DHookAddParam(g_hProcessMovementHookPre, HookParamType_ObjectPtr);
-	DHookRaw(g_hProcessMovementHookPre, false, IGameMovement);	
+	DHookRaw(g_hProcessMovementHookPre, false, IGameMovement);
 	
 	// MarkEntitiesAsTouching
 	if (!GameConfGetKeyValue(gamedataConf, "IServerGameEnts", interfaceName, sizeof(interfaceName)))
 	{
 		SetFailState("Failed to get IServerGameEnts interface name");
 	}	
-	g_IServerGameEnts = SDKCall(CreateInterface, interfaceName, 0);     
+	g_IServerGameEnts = SDKCall(CreateInterface, interfaceName, 0);
 	if (!g_IServerGameEnts)
 	{
 		SetFailState("Failed to get IServerGameEnts pointer");
@@ -256,7 +256,7 @@ public void OnPluginStart()
 		
 		char classname[64];
 		for (int entity = MaxClients+1; entity < sizeof(g_bTouchingTrigger[]); entity++)
-		{			
+		{
 			if (!IsValidEntity(entity)) continue;
 			GetEntPropString(entity, Prop_Data, "m_iClassname", classname, sizeof(classname));
 			HookTrigger(entity, classname);
@@ -310,7 +310,7 @@ public Action Hook_TriggerStartTouch(int entity, int other)
 	if (1 <= other <= MaxClients) 
 	{
 		g_bTouchingTrigger[other][entity] = true;
-		DebugMsg(other, "StartTouch %i", entity);	 	 	
+		DebugMsg(other, "StartTouch %i", entity);
 	}
 	
 	return Plugin_Continue;
@@ -327,7 +327,7 @@ bool NameExists(const char[] targetname)
 	int max = GetMaxEntities();
 	for (int entity = 1; entity < max; entity++)
 	{
-		if (!IsValidEntity(entity)) continue;		
+		if (!IsValidEntity(entity)) continue;
 		if (GetEntPropString(entity, Prop_Data, "m_iName", targetname2, sizeof(targetname2)) == 0) continue;
 
 		if (StrEqual(targetname, targetname2)) return true;
@@ -338,7 +338,7 @@ bool NameExists(const char[] targetname)
 
 public void Hook_TriggerTeleportTouchPost(int entity, int other)
 {
-	if (!(1 <= other <= MaxClients)) return; 
+	if (!(1 <= other <= MaxClients)) return;
 	
 	if (!SDKCall(g_hPassesTriggerFilters, entity, other)) return;
  	
@@ -380,13 +380,13 @@ float GetJumpImpulse()
 }
 
 bool IsDuckCoolingDown(int client)
-{		
+{
 	// TODO Is this stuff in MoveData?
 	
 	// Ducking is prevented if the last switch to a ducked state from an unducked state is sooner than sv_timebetweenducks ago.
 	// Note: This cooldown is based on client's curtime (GetGameTime() in this context) and thus is unaffected by m_flLaggedMovementValue.
 	if (g_cvTimeBetweenDucks != null && HasEntProp(client, Prop_Data, "m_flLastDuckTime"))
-	{		
+	{
 		if (GetGameTime() - GetEntPropFloat(client, Prop_Data, "m_flLastDuckTime") < g_cvTimeBetweenDucks.FloatValue) return true;
 	}	
 		
@@ -402,7 +402,7 @@ bool IsDuckCoolingDown(int client)
 }
 
 void Duck(int client, float origin[3], float mins[3], float maxs[3])
-{		
+{
 	bool ducking = GetEntityFlags(client) & FL_DUCKING != 0;
 	
 	bool nextDucking = ducking;
@@ -416,7 +416,7 @@ void Duck(int client, float origin[3], float mins[3], float maxs[3])
 		}
 	}
 	else if (g_iButtons[client] & IN_DUCK == 0 && ducking) 
-	{		
+	{
 		origin[2] -= g_flDuckDelta;
 		
 		TR_TraceHullFilter(origin, origin, g_vecMins, g_vecMaxsUnducked, MASK_PLAYERSOLID, PlayerFilter);
@@ -488,7 +488,7 @@ void AirAccelerate(int client, float velocity[3], Handle hParams)
 		float wishspd = wishspeed;
 		if (wishspd > AIR_SPEED_CAP) wishspd = AIR_SPEED_CAP;
 
-		float currentspeed = GetVectorDotProduct(velocity, wishdir);		
+		float currentspeed = GetVectorDotProduct(velocity, wishdir);
 		float addspeed = wishspd - currentspeed;
 		
 		if (addspeed > 0)
@@ -537,7 +537,7 @@ void FinishGravity(int client, float velocity[3])
 }
 
 bool CheckWater(int client)
-{	
+{
 	// The cached water level is updated multiple times per tick, including after movement happens,
 	// so we can just check the cached value here.	
 	return GetEntProp(client, Prop_Data, "m_nWaterLevel") > 1;
@@ -573,7 +573,7 @@ void PreventCollision(int client, Handle hParams, const float origin[3], const f
 
 void ClipVelocity(const float velocity[3], const float nrm[3], float out[3])
 {
-	float backoff = GetVectorDotProduct(velocity, nrm);	
+	float backoff = GetVectorDotProduct(velocity, nrm);
 	
 	for (int i = 0; i < 3; i++) 
 	{
@@ -584,13 +584,13 @@ void ClipVelocity(const float velocity[3], const float nrm[3], float out[3])
 }
 
 void SetVelocity(int client, float velocity[3])
-{		
+{
 	// Pull out basevelocity from desired true velocity
 	// Use the pre-tick basevelocity because that is what influenced this tick's movement and the desired new velocity.
 	SubtractVectors(velocity, g_vLastBaseVelocity[client], velocity);
 	
 	float baseVelocity[3];
-	GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);	
+	GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);
 
 	TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, velocity);
 	
@@ -600,7 +600,7 @@ void SetVelocity(int client, float velocity[3])
 }
 
 public MRESReturn DHook_ProcessMovementPre(Handle hParams) 
-{	
+{
 	int client = DHookGetParam(hParams, 1);
 	
 	g_iTick[client]++;
@@ -618,7 +618,7 @@ public MRESReturn DHook_ProcessMovementPre(Handle hParams)
 }
 
 void RunPreTickChecks(int client, Handle hParams)
-{				
+{
 	// Recreate enough of CGameMovement::ProcessMovement to predict if fixes are needed.
 	// We only really care about a limited set of scenarios (less than waist-deep in water, MOVETYPE_WALK, air movement).
 		
@@ -631,7 +631,7 @@ void RunPreTickChecks(int client, Handle hParams)
 	// If we are definitely staying on the ground this tick, don't predict it.
 	if (g_iLastGroundEnt[client] != -1 && !CanJump(client)) return;
 	
-	g_iLastTickPredicted[client] = g_iTick[client];	
+	g_iLastTickPredicted[client] = g_iTick[client];
 	
 	g_iButtons[client] = DHookGetParamObjectPtrVar(hParams, 2, 36, ObjectValueType_Int);
 	g_iOldButtons[client] = DHookGetParamObjectPtrVar(hParams, 2, 40, ObjectValueType_Int);
@@ -639,11 +639,11 @@ void RunPreTickChecks(int client, Handle hParams)
 	DHookGetParamObjectPtrVarVector(hParams, 2, 12, ObjectValueType_Vector, g_vAngles[client]);
 	
 	float velocity[3];
-	DHookGetParamObjectPtrVarVector(hParams, 2, 64, ObjectValueType_Vector, velocity); 
+	DHookGetParamObjectPtrVarVector(hParams, 2, 64, ObjectValueType_Vector, velocity);
 	
 	float baseVelocity[3];
 	// basevelocity is not stored in MoveData
-	GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);	
+	GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);
 			
 	float origin[3];
 	DHookGetParamObjectPtrVarVector(hParams, 2, GetEngineVersion() == Engine_CSGO ? 172 : 152, ObjectValueType_Vector, origin);
@@ -654,7 +654,7 @@ void RunPreTickChecks(int client, Handle hParams)
 	
 	// These roughly replicate the behavior of their equivalent CGameMovement functions.
 	
-	Duck(client, nextOrigin, mins, maxs);	
+	Duck(client, nextOrigin, mins, maxs);
 	
 	StartGravity(client, velocity);
 	
@@ -670,7 +670,7 @@ void RunPreTickChecks(int client, Handle hParams)
 	AddVectors(velocity, baseVelocity, velocity);
 	
 	// Store this for later in case we need to undo the effects of a collision.
-	g_vPreCollisionVelocity[client] = velocity;	
+	g_vPreCollisionVelocity[client] = velocity;
 	
 	// This is basically where TryPlayerMove happens.
 	// We don't really care about anything after TryPlayerMove either.	
@@ -685,11 +685,11 @@ void RunPreTickChecks(int client, Handle hParams)
 	TR_TraceHullFilter(origin, nextOrigin, mins, maxs, MASK_PLAYERSOLID, PlayerFilter);
 			
 	if (TR_DidHit())
-	{		
+	{
 		float nrm[3];
-		TR_GetPlaneNormal(null, nrm);		
+		TR_GetPlaneNormal(null, nrm);
 		
-		if (g_iLastCollisionTick[client] < g_iTick[client]-1) 
+		if (g_iLastCollisionTick[client] < g_iTick[client]-1)
 		{
 			DebugMsg(client, "Collision predicted! (normal: %.3f %.3f %.3f)", nrm[0], nrm[1], nrm[2]);
 		}
@@ -703,23 +703,23 @@ void RunPreTickChecks(int client, Handle hParams)
 		g_vCollisionNormal[client] = nrm;
 		
 		// If we are moving up too fast, we can't land anyway so these fixes aren't needed.
-		if (velocity[2] > NON_JUMP_VELOCITY) return;	
+		if (velocity[2] > NON_JUMP_VELOCITY) return;
 		
 		// Landing also requires a walkable surface.
 		// This will give false negatives if the surface initially collided 
 		// is too steep but the final one isn't (rare and unlikely to matter). 
-		if (nrm[2] < MIN_STANDABLE_ZNRM) return;		
+		if (nrm[2] < MIN_STANDABLE_ZNRM) return;
 		
 		// Check uphill incline fix first since it's more common and faster.
 		if (g_cvUphill.IntValue == UPHILL_NEUTRAL)
-		{		
+		{
 			// Make sure it's not flat, and that we are actually going uphill (X/Y dot product < 0.0)
 			if (nrm[2] < 1.0 && nrm[0]*velocity[0] + nrm[1]*velocity[1] < 0.0)
 			{
 				bool shouldDoDownhillFixInstead = false;
 				
 				if (g_cvDownhill.BoolValue)
-				{					
+				{
 					// We also want to make sure this isn't a case where it's actually more beneficial to do the downhill fix.
 					float newVelocity[3];
 					ClipVelocity(velocity, nrm, newVelocity);
@@ -731,8 +731,8 @@ void RunPreTickChecks(int client, Handle hParams)
 				}	
 				
 				if (!shouldDoDownhillFixInstead)
-				{				
-					DebugMsg(client, "DO FIX: Uphill Incline");				
+				{
+					DebugMsg(client, "DO FIX: Uphill Incline");
 					PreventCollision(client, hParams, origin, collisionPoint, velocity_tick);
 					
 					// This naturally prevents any edge bugs so we can skip the edge fix.
@@ -759,7 +759,7 @@ void RunPreTickChecks(int client, Handle hParams)
 			}
 			else			
 			{
-				float velocity2[3];				
+				float velocity2[3];
 				ClipVelocity(velocity, nrm, velocity2);
 				
 				if (velocity2[2] > NON_JUMP_VELOCITY) 
@@ -795,10 +795,10 @@ void RunPreTickChecks(int client, Handle hParams)
 				if (TracePlayerBBoxForGround(tickEnd, tickEndBelow, mins, maxs)) return;
 			}
 			
-			DebugMsg(client, "DO FIX: Edge Bug");					
-			DebugLaser(client, collisionPoint, tickEnd, 15.0, 0.5, g_color1);					
+			DebugMsg(client, "DO FIX: Edge Bug");
+			DebugLaser(client, collisionPoint, tickEnd, 15.0, 0.5, g_color1);
 			
-			PreventCollision(client, hParams, origin, collisionPoint, velocity_tick);			
+			PreventCollision(client, hParams, origin, collisionPoint, velocity_tick);
 		}		
 	}
 }
@@ -807,7 +807,7 @@ public void Hook_PlayerGroundEntChanged(int client)
 {
 	// We cannot get the new ground entity at this point, 
 	// but if the previous value was -1, it must be something else now, so we landed.
-	if (GetEntPropEnt(client, Prop_Data, "m_hGroundEntity") == -1) 
+	if (GetEntPropEnt(client, Prop_Data, "m_hGroundEntity") == -1)
 	{
 		g_iLastLandTick[client] = g_iTick[client];
 		DebugMsg(client, "Landed");
@@ -826,9 +826,9 @@ bool DoTriggerjumpFix(int client, const float landingPoint[3], const float landi
 	GetEntPropVector(client, Prop_Data, "m_vecAbsOrigin", origin);
 	
 	float landingMaxsBelow[3];
-	landingMaxsBelow[0] = landingMaxs[0]; 
-	landingMaxsBelow[1] = landingMaxs[1]; 
-	landingMaxsBelow[2] = origin[2] - landingPoint[2];	
+	landingMaxsBelow[0] = landingMaxs[0];
+	landingMaxsBelow[1] = landingMaxs[1];
+	landingMaxsBelow[2] = origin[2] - landingPoint[2];
 	
 	ArrayList triggers = new ArrayList();
 	
@@ -838,7 +838,7 @@ bool DoTriggerjumpFix(int client, const float landingPoint[3], const float landi
 	bool didSomething = false;
 	
 	for (int i = 0; i < triggers.Length; i++)
-	{	
+	{
 		int trigger = triggers.Get(i);
 		
 		// MarkEntitiesAsTouching always fires the Touch function even if it was already fired this tick.
@@ -858,7 +858,7 @@ bool DoTriggerjumpFix(int client, const float landingPoint[3], const float landi
 }
 
 bool DoStairsFix(int client)
-{	
+{
 	if (!g_cvStairs.BoolValue) return false;
 	if (g_iLastTickPredicted[client] != g_iTick[client]) return false;
 	
@@ -914,7 +914,7 @@ bool DoStairsFix(int client)
 			TR_EnumerateEntitiesHull(start, start, mins, maxs, true, AddTrigger, triggers);
 			
 			for (int i = 0; i < triggers.Length; i++)
-			{	
+			{
 				int trigger = triggers.Get(i);
 				
 				if (SDKCall(g_hPassesTriggerFilters, trigger, client))
@@ -959,7 +959,7 @@ bool DoStairsFix(int client)
 				
 				if (!TR_DidHit()) return false; // Shouldn't happen
 				
-				TR_GetPlaneNormal(null, nrm);	
+				TR_GetPlaneNormal(null, nrm);
 				
 				// Ground atop "stair" is not walkable, not stairs
 				if (nrm[2] < MIN_STANDABLE_ZNRM) return false;
@@ -1026,7 +1026,7 @@ bool DoInclineCollisionFixes(int client, const float nrm[3])
 	}	
 	
 	if (dot < 0)
-	{	
+	{
 		// If going uphill, only adjust velocity if uphill incline fix is set to loss mode
 		// OR if this is actually a case where the downhill incline fix is better.
 		if (!((downhillFixIsBeneficial && g_cvDownhill.BoolValue) || g_cvUphill.IntValue == UPHILL_LOSS)) return false;
@@ -1040,13 +1040,13 @@ bool DoInclineCollisionFixes(int client, const float nrm[3])
 	// Since we are on the ground, we also don't need to FinishGravity().
 	
 	if (g_cvUseOldSlopefixLogic.BoolValue)
-	{				
+	{
 		// The old slopefix immediately moves basevelocity into local velocity to keep it from getting cleared.
 		// This results in double boosts as the player is likely still being influenced by the source of the basevelocity.
 		if (GetEntityFlags(client) & FL_BASEVELOCITY != 0)
 		{
 			float baseVelocity[3];
-			GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);	
+			GetEntPropVector(client, Prop_Data, "m_vecBaseVelocity", baseVelocity);
 			AddVectors(newVelocity, baseVelocity, newVelocity);
 		}
 		
@@ -1062,10 +1062,10 @@ bool DoInclineCollisionFixes(int client, const float nrm[3])
 
 bool DoTelehopFix(int client)
 {
-	if (!g_cvTelehop.BoolValue) return false;	
+	if (!g_cvTelehop.BoolValue) return false;
 	if (g_iLastTickPredicted[client] != g_iTick[client]) return false;
 	
-	if (g_iLastMapTeleportTick[client] != g_iTick[client]) return false;	
+	if (g_iLastMapTeleportTick[client] != g_iTick[client]) return false;
 			
 	// Check if we either collided this tick OR landed during this tick.
 	// Note that we could have landed this tick, lost Z velocity, then gotten teleported, making us no longer on the ground.
@@ -1092,12 +1092,12 @@ bool DoTelehopFix(int client)
 
 // PostThink works a little better than a ProcessMovement post hook because we need to wait for ProcessImpacts (trigger activation)
 public void Hook_PlayerPostThink(int client)
-{	
+{
 	if (!IsPlayerAlive(client)) return;
 	if (GetEntityMoveType(client) != MOVETYPE_WALK) return;
-	if (CheckWater(client)) return;	
+	if (CheckWater(client)) return;
 	
-	bool landed = GetEntPropEnt(client, Prop_Data, "m_hGroundEntity") != -1 && g_iLastGroundEnt[client] == -1;	
+	bool landed = GetEntPropEnt(client, Prop_Data, "m_hGroundEntity") != -1 && g_iLastGroundEnt[client] == -1;
 		
 	float origin[3], landingMins[3], landingMaxs[3], nrm[3], landingPoint[3];
 	
@@ -1126,7 +1126,7 @@ public void Hook_PlayerPostThink(int client)
 			TR_GetPlaneNormal(null, nrm);
 			
 			if (nrm[2] < MIN_STANDABLE_ZNRM) 
-			{				
+			{
 				// This is rare, and how the incline fix should behave isn't entirely clear because maybe we should
 				// collide with multiple faces at once in this case, but let's just get the ground we officially 
 				// landed on and use that for our ground normal.
@@ -1151,7 +1151,7 @@ public void Hook_PlayerPostThink(int client)
 	
 	if (landed && TR_GetFraction() > 0.0)
 	{
-		DoTriggerjumpFix(client, landingPoint, landingMins, landingMaxs);		
+		DoTriggerjumpFix(client, landingPoint, landingMins, landingMaxs);
 		
 		// Check if a trigger we just touched put us in the air (probably due to a teleport).
 		if (GetEntityFlags(client) & FL_ONGROUND == 0) landed = false;
@@ -1161,7 +1161,7 @@ public void Hook_PlayerPostThink(int client)
 	if (DoStairsFix(client)) return;
 
 	if (landed)
-	{			
+	{
 		DoInclineCollisionFixes(client, nrm);
 	}
 	
@@ -1169,9 +1169,9 @@ public void Hook_PlayerPostThink(int client)
 }
 
 public bool AddTrigger(int entity, ArrayList triggers)
-{		
-	TR_ClipCurrentRayToEntity(MASK_ALL, entity);	
-	if (TR_DidHit()) triggers.Push(entity);	
+{
+	TR_ClipCurrentRayToEntity(MASK_ALL, entity);
+	if (TR_DidHit()) triggers.Push(entity);
 	
 	return true;
 }
@@ -1180,7 +1180,7 @@ bool TracePlayerBBoxForGround(const float origin[3], const float originBelow[3],
 {
 	// See CGameMovement::TracePlayerBBoxForGround()
 	
-	float origMins[3], origMaxs[3];	
+	float origMins[3], origMaxs[3];
 	origMins = mins;
 	origMaxs = maxs;
 	
